@@ -5,6 +5,7 @@ import { showLoadSpinner } from './components/spinner.js'
 
 
 $(document).ready(() => {
+    
     showLoadSpinner();
     showProducts();
     showAllCategories();
