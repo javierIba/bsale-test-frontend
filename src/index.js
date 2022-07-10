@@ -1,4 +1,4 @@
-import {showProducts,searchProductBy,showProductsByCategory} from './components/products.js';
+import {showProducts,searchProductBy,showProductsByCategory,showSortProducts} from './components/products.js';
 import { showAllCategories} from './components/category.js';
 import { showLoadSpinner } from './components/spinner.js'
 
@@ -12,12 +12,14 @@ $(document).ready(() => {
 
 $(document).ready(() => {
    showProductsByCategory();
-   searchProductBy()
+   
+   showSortProducts();
 })
 
 
 $(document).ready(function () {
-    
+    searchProductBy();
+ 
 });
 
 

@@ -1,4 +1,4 @@
-// import { showLoadSpinner } from './spinner.js'
+
 
 const url_server = "http://localhost:8080";
 const errorMessage = 'Ha ocurrido un error, por favor intentelo más tarde';
@@ -34,11 +34,12 @@ function drawCategories(categories) {
 
     $('#categoryList').html(() => {
         return categories.reduce((acc, cur) => {
+            let name = cur.name[0].toUpperCase() + cur.name.slice(1,cur.name.lenght);
             let category = `
             <li class="list-group-item d-flex justify-content-between align-items-start " name="${cur.id}">
                 <div class="ms-2 me-auto">
                     <div class="fw-bold" >
-                    ${cur.name}
+                    ${  name}
                     </div>
                 </div>
             </li>`

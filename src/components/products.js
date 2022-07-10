@@ -10,20 +10,18 @@ const errorMessage = 'Ha ocurrido un error, por favor intentelo más tarde';
 function showProducts() {
     $.ajax({
         url: url_showAllProducts,
-        type: 'GET',
+        method: 'GET',
         dataType: 'json',
         success: (json) => ajaxPetitionProductSuccess(json),
-        error: () => ajaxPetitionProductError(json)
+        error: (json) => ajaxPetitionProductError(json)
     });
 }
 
 function ajaxPetitionProductSuccess(json) {
     const products = json.data;
-    const quantity = json.quantity;
     const messageNotFound = 'No se han encontrado articulos con esas caracteristicas';
     if (Array.isArray(products) && products.length > 0) {
         drawProducts(products);
-        // drawPagination(quantity);
     } else {
         $('#productList').html(messageNotFound);
     }
@@ -45,7 +43,6 @@ function drawProducts(products) {
             let productPriceDiscount = '';
             if (productDiscount) {
                 productPriceDiscount = new Intl.NumberFormat('es-CL', { currency: 'CLP', style: 'currency' }).format(cur.price * ((100 - productDiscount) / 100));
-
             }
             let productCard = `
             <div class="col-sm-5 col-md-4 col-lg-3  ">
@@ -71,11 +68,16 @@ function drawProducts(products) {
 }
 
 function searchProductBy() {
+
     $("body #buscador").keypress((e) => {
+        $("#categoryList li").removeClass("list-group-item-dark");
         let code = (e.keyCode ? e.keyCode : e.which);
         let enterCode = 13;
+
         if (code === enterCode) {
             let productToSearch = $('body #buscador').val();
+            e.preventDefault();
+
             showLoadSpinner()
             $.ajax({
                 url: url_showProductBy,
@@ -85,10 +87,11 @@ function searchProductBy() {
                 data: JSON.stringify({ product: productToSearch }),
 
                 success: (json) => ajaxPetitionProductSuccess(json),
-                error: () => ajaxPetitionProductError(json)
+                error: (json) => ajaxPetitionProductError(json)
             });
         }
     });
+
 }
 
 function showProductsByCategory() {
@@ -104,9 +107,7 @@ function showProductsByCategory() {
                 contentType: "application/json",
                 dataType: "json",
                 data: JSON.stringify({
-                    category: categoryName,
-                    min: 0,
-                    max: 8
+                    category: categoryName
                 }),
 
                 success: (json) => ajaxPetitionProductSuccess(json),
@@ -114,30 +115,68 @@ function showProductsByCategory() {
             });
 
         }
+        $('#buscador').val('');
         $("#categoryList li").removeClass("list-group-item-dark");
         $(this).addClass("list-group-item-dark");
     });
 }
+function showSortProducts() {
+    $('body #sortBy').on('click', 'a', function () {
+        let sortBy = $(this).attr('name');
+        let inputSearchValue = $('body #buscador').val();
+        let categoryName = $(".list-group-item-dark").attr('name');
+        if (categoryName) {
+            if (categoryName === 'initialCategory') {
+                showLoadSpinner();
+                $.ajax({
+                    url: url_showAllProducts,
+                    method: 'GET',
+                    contentType: "application/json",
+                    dataType: "json",
+                    
 
-// function drawPagination(quantity) {
-//     $('body #pagination').html(() => {
-//         let extraPage = (quantity[0].quantity % 8 !== 0) ? 1 : 0;
-//         let pagesQuantity = parseInt(quantity[0].quantity / 8) + extraPage;
-//         let pageItem = [];
-//         for (let i = 0; i < pagesQuantity; i++) {
-//             pageItem.push('<li class="page-item"><a class="page-link" name="' + (i + 1) + '">' + (i + 1) + '</a></li>');
-//         }
+                    success: (json) => ajaxPetitionProductSortSuccess(json, sortBy),
+                    error: (json) => ajaxPetitionProductError(json)
+                });
+            } else {
+                showLoadSpinner();
+                $.ajax({
+                    url: url_showProductsByCategory,
+                    method: 'POST',
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify({
+                        category: categoryName
+                    }),
 
-//         let pagination =
-//             `<ul class="pagination" >
-//                 ${pageItem.join('')}
-//             </ul>`;
-//         return pagination
-//     })
-// }
+                    success: (json) => ajaxPetitionProductSortSuccess(json,sortBy),
+                    error: (json) => ajaxPetitionProductError(json)
+                });
+
+            }
+        }
+    })
+
+}
+function ajaxPetitionProductSortSuccess(json, sortBy) {
+    let data = json.data;
+    if (sortBy === 'lPrice') {
+        data = data.sort((a, b) => a.price - b.price);
+    } else if (sortBy === 'hPrice') {
+        data = data.sort((a, b) => b.price - a.price);
+    } else if (sortBy === 'lDiscount') {
+        data = data.sort((a, b) => a.discount - b.discount);
+
+    } else if (sortBy === 'hDiscount') {
+        data = data.sort((a, b) => b.discount - a.discount);
+
+    }
+    drawProducts(data);
+}
 
 export {
     showProducts,
     searchProductBy,
-    showProductsByCategory
+    showProductsByCategory,
+    showSortProducts
 }

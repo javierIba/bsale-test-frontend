@@ -55,7 +55,22 @@
           </ul>
         </div>
         <div class="col-10">
-          <div id="productTittle"></div>
+
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Ordenar por...
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="sortBy">
+
+              <a class="dropdown-item" name="lPrice">Menor precio</a>
+              <a class="dropdown-item" name="hPrice">Mayor precio</a>
+              <a class="dropdown-item" name="lDiscount">Menor descuento</a>
+              <a class="dropdown-item" name="hDiscount">Mayor descuento</a>
+
+
+            </div>
+          </div>
+
           <div class="row" id="productList">
           </div>
           <div class="pagination-container">
