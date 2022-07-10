@@ -1,6 +1,0 @@
-
-function listCategory(){
-    
-}
-
-export {listCategory}
