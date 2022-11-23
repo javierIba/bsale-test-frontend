@@ -20,6 +20,7 @@ $(document).ready(() => {
 
 $(document).ready(function () {
     searchProductBy();
+    console.log("d")
  
 });
 
